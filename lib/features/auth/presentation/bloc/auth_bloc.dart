@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
-import '../../domain/entities/user_entity.dart';
+import '../../domain/usecases/login_usecase.dart';
+import '../../domain/usecases/signup_usecase.dart';
+import '../../domain/usecases/forgot_password_usecase.dart';
 
-/// A lightweight BLoC implementation for auth without external packages.
-/// Uses ChangeNotifier + ValueNotifier pattern to mimic BLoC behavior.
+/// Lightweight BLoC for auth — uses ChangeNotifier (no external BLoC package).
+/// Receives use cases via constructor injection (Clean Architecture DI).
 class AuthBloc extends ChangeNotifier {
+  final LoginUseCase _loginUseCase;
+  final SignUpUseCase _signUpUseCase;
+  final ForgotPasswordUseCase _forgotPasswordUseCase;
+
+  AuthBloc({
+    required LoginUseCase loginUseCase,
+    required SignUpUseCase signUpUseCase,
+    required ForgotPasswordUseCase forgotPasswordUseCase,
+  })  : _loginUseCase = loginUseCase,
+        _signUpUseCase = signUpUseCase,
+        _forgotPasswordUseCase = forgotPasswordUseCase;
+
   AuthState _state = AuthInitial();
   bool _isPasswordVisible = false;
   bool _isRememberMe = false;
@@ -37,17 +51,15 @@ class AuthBloc extends ChangeNotifier {
     _state = AuthLoading();
     notifyListeners();
 
-    try {
-      await Future.delayed(const Duration(seconds: 2));
-      final user = UserEntity(
-        id: '1',
-        fullName: 'Brandone Louis',
-        email: event.email,
-      );
-      _state = AuthLoginSuccess(user: user);
-    } catch (e) {
-      _state = AuthFailure(message: e.toString());
-    }
+    final result = await _loginUseCase(
+      email: event.email,
+      password: event.password,
+    );
+
+    result.fold(
+      (failure) => _state = AuthFailure(message: failure.message),
+      (user) => _state = AuthLoginSuccess(user: user),
+    );
     notifyListeners();
   }
 
@@ -55,17 +67,16 @@ class AuthBloc extends ChangeNotifier {
     _state = AuthLoading();
     notifyListeners();
 
-    try {
-      await Future.delayed(const Duration(seconds: 2));
-      final user = UserEntity(
-        id: '2',
-        fullName: event.fullName,
-        email: event.email,
-      );
-      _state = AuthSignUpSuccess(user: user);
-    } catch (e) {
-      _state = AuthFailure(message: e.toString());
-    }
+    final result = await _signUpUseCase(
+      fullName: event.fullName,
+      email: event.email,
+      password: event.password,
+    );
+
+    result.fold(
+      (failure) => _state = AuthFailure(message: failure.message),
+      (user) => _state = AuthSignUpSuccess(user: user),
+    );
     notifyListeners();
   }
 
@@ -74,12 +85,12 @@ class AuthBloc extends ChangeNotifier {
     _state = AuthLoading();
     notifyListeners();
 
-    try {
-      await Future.delayed(const Duration(seconds: 2));
-      _state = AuthForgotPasswordSuccess(email: event.email);
-    } catch (e) {
-      _state = AuthFailure(message: e.toString());
-    }
+    final result = await _forgotPasswordUseCase(email: event.email);
+
+    result.fold(
+      (failure) => _state = AuthFailure(message: failure.message),
+      (_) => _state = AuthForgotPasswordSuccess(email: event.email),
+    );
     notifyListeners();
   }
 }

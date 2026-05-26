@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "199819640598",
+    "project_id": "btth1-jobspot",
+    "storage_bucket": "btth1-jobspot.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199819640598:android:84987d868b63819b05da37",
+        "android_client_info": {
+          "package_name": "com.example.btth1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDFsrlIS6EJeRKs9AerA5vJH2yWJQqAuM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

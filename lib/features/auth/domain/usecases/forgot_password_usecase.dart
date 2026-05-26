@@ -1,10 +1,13 @@
-/// Use case for resetting user password via email.
-class ForgotPasswordUseCase {
-  Future<bool> call({required String email}) async {
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 2));
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
+import '../repositories/auth_repository.dart';
 
-    // Placeholder: Replace with actual repository call
-    return true;
+/// Use case for sending a password-reset email.
+class ForgotPasswordUseCase {
+  final AuthRepository repository;
+  const ForgotPasswordUseCase({required this.repository});
+
+  Future<Either<Failure, bool>> call({required String email}) async {
+    return repository.forgotPassword(email: email);
   }
 }

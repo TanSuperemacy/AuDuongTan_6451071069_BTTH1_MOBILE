@@ -1,32 +1,65 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/error/failures.dart';
 import '../../domain/entities/user_entity.dart';
+import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_datasource.dart';
 
-/// Repository implementation for authentication operations.
-class AuthRepositoryImpl {
+/// Concrete implementation of [AuthRepository] — lives in the Data layer.
+/// Catches [AuthException] from the datasource and maps to [Failure].
+class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
 
-  AuthRepositoryImpl({required this.remoteDataSource});
+  const AuthRepositoryImpl({required this.remoteDataSource});
 
-  Future<UserEntity> login({
+  @override
+  Future<Either<Failure, UserEntity>> login({
     required String email,
     required String password,
   }) async {
-    return await remoteDataSource.login(email: email, password: password);
+    try {
+      final user =
+          await remoteDataSource.login(email: email, password: password);
+      return Right(user);
+    } on AuthException catch (e) {
+      return Left(AuthFailureEntity(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
-  Future<UserEntity> signUp({
+  @override
+  Future<Either<Failure, UserEntity>> signUp({
     required String fullName,
     required String email,
     required String password,
   }) async {
-    return await remoteDataSource.signUp(
-      fullName: fullName,
-      email: email,
-      password: password,
-    );
+    try {
+      final user = await remoteDataSource.signUp(
+        fullName: fullName,
+        email: email,
+        password: password,
+      );
+      return Right(user);
+    } on AuthException catch (e) {
+      return Left(AuthFailureEntity(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
-  Future<bool> forgotPassword({required String email}) async {
-    return await remoteDataSource.forgotPassword(email: email);
+  @override
+  Future<Either<Failure, bool>> forgotPassword({
+    required String email,
+  }) async {
+    try {
+      final result =
+          await remoteDataSource.forgotPassword(email: email);
+      return Right(result);
+    } on AuthException catch (e) {
+      return Left(AuthFailureEntity(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 }
