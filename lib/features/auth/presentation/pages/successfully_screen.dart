@@ -5,6 +5,8 @@ import '../../../../core/constants/assets.dart';
 import '../../../../core/constants/strings.dart';
 import 'login_screen.dart';
 
+import '../../../profile/presentation/pages/main_screen.dart';
+
 class SuccessfullyScreen extends StatelessWidget {
   const SuccessfullyScreen({super.key});
 
@@ -37,7 +39,7 @@ class SuccessfullyScreen extends StatelessWidget {
               Text(
                 AppStrings.successDescription,
                 style: AppTextStyles.bodyMedium
-                    .copyWith(color: AppColors.textSecondary),
+                .copyWith(color: AppColors.textSecondary),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
@@ -61,7 +63,7 @@ class SuccessfullyScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                          builder: (_) => const LoginScreen()),
+                          builder: (_) => const MainScreen()),
                       (route) => false,
                     );
                   },

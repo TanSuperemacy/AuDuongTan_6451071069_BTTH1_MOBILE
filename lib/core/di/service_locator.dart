@@ -8,6 +8,7 @@ import '../../features/auth/domain/usecases/login_usecase.dart';
 import '../../features/auth/domain/usecases/signup_usecase.dart';
 import '../../features/auth/domain/usecases/forgot_password_usecase.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/profile/presentation/bloc/profile_bloc.dart';
 
 /// Global service locator instance.
 final sl = GetIt.instance;
@@ -48,4 +49,6 @@ Future<void> initDependencies() async {
       forgotPasswordUseCase: sl<ForgotPasswordUseCase>(),
     ),
   );
+
+  sl.registerFactory(() => ProfileBloc());
 }
